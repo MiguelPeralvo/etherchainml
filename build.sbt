@@ -1,6 +1,6 @@
 name := "etherchainml"
 
-scalaVersion := "2.10.6"
+scalaVersion := "2.11.8"
 
 javaOptions in(Test, run) += "-XX:+UseConcMarkSweepGC"
 
@@ -26,10 +26,11 @@ ivyScala := ivyScala.value map {
 }
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-sql" % "1.6.1",
-  "org.apache.spark" %% "spark-mllib" % "1.6.1",
-  "org.apache.spark" %% "spark-catalyst" % "1.6.1",
-  "org.apache.spark" %% "spark-streaming" % "1.6.1",
+  "org.apache.spark" %% "spark-core" % "2.0.0",
+  "org.apache.spark" %% "spark-sql" % "2.0.0",
+  "org.apache.spark" %% "spark-mllib" % "2.0.0",
+  "org.apache.spark" %% "spark-catalyst" % "2.0.0",
+  "org.apache.spark" %% "spark-streaming" % "2.0.0",
   "com.typesafe.akka" %% "akka-actor" % "2.3.15",
   "com.typesafe.akka" %% "akka-remote" % "2.3.15",
   "com.typesafe.akka" %% "akka-cluster" % "2.3.15",
@@ -42,7 +43,7 @@ libraryDependencies ++= Seq(
   "junit" % "junit" % "4.10" % "provided",
   "org.scalacheck" %% "scalacheck" % "1.12.1" % "test",
  //"com.cloudphysics" % "jerkson_2.10" % "0.6.3",
-  "com.holdenkarau" %% "spark-testing-base" % "1.6.1_0.3.3",
+  "com.holdenkarau" %% "spark-testing-base" % "2.0.0_0.4.4",
   "org.scalaz" %% "scalaz-core" % "7.2.3",
   "org.scalaj" %% "scalaj-http" % "2.2.1",
   "org.json4s" %% "json4s-native" % "3.2.11",

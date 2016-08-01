@@ -26,7 +26,7 @@ class HttpGetEtherChain(parseResponse: (json4s.JValue) => List[Event]) extends E
 
     parsedResponse.map{
       parseResponse
-      //parseResponseEtherChainTrade
+
     }
   }
 }

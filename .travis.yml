@@ -17,7 +17,7 @@ cache:
       - $HOME/.sbt/boot/
 
 scala:
-   - 2.10.6
+   - 2.11.8
 
 jdk:
   - oraclejdk8
@@ -27,8 +27,8 @@ services:
 
 before_install:
   - export PATH=$HOME/.local/bin:$PATH
-  - export ENVIRONMENT=travis-test
-  - export CONFIG_FILE=travis-test.json
+  #- export ENVIRONMENT=travis-test
+  #- export CONFIG_FILE=travis-test.json
   - docker-compose -f .ci/docker-compose.travis-test.yml up -d
 
 script:
