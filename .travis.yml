@@ -1,0 +1,42 @@
+sudo: required
+
+# whitelist
+branches:
+  only:
+    - master
+
+notifications:
+  email:
+    - miguel.peralvo@gmail.com
+
+language: scala
+
+cache:
+  directories:
+      - $HOME/.ivy2/cache
+      - $HOME/.sbt/boot/
+
+scala:
+   - 2.10.6
+
+jdk:
+  - oraclejdk8
+
+services:
+  - docker
+
+before_install:
+  - export PATH=$HOME/.local/bin:$PATH
+  - export ENVIRONMENT=travis-test
+  - export CONFIG_FILE=travis-test.json
+  - docker-compose -f .ci/docker-compose.travis-test.yml up -d
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION clean coverage test
+
+  # Trick to avoid unnecessary cache updates
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+
+#after_success:
+#  - sbt coveralls

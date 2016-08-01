@@ -1,0 +1,46 @@
+mongo1:
+  image: mongo
+  ports:
+    - "27017:27017"
+    - "28017:28017"
+
+cassandra1:
+  image: cassandra:latest
+  ports:
+    - "7000:7000"
+    - "7001:7001"
+    - "7199:7199"
+    - "9042:9042"
+    - "9160:9160"
+
+zookeeper1:
+  image: bahaaldine/docker-zookeeper
+  volumes:
+    - "./kafka/server1:/etc/kafka"
+    - "./logs/logstash-zookeeper1:/opt/kafka/logs/"
+  ports:
+    - "2181:2181"
+  extra_hosts:
+    - "brokers:192.168.59.103"
+
+kafka1:
+  image: bahaaldine/docker-kafka
+  volumes:
+    - "./kafka/server1:/etc/kafka"
+    - "./logs/logstash-kafka1:/opt/kafka/logs/"
+  extra_hosts:
+    - "brokers:192.168.59.103"
+  ports:
+    - "9092:9092"
+
+kafka2:
+  image: bahaaldine/docker-kafka
+  volumes:
+    - "./kafka/server2:/etc/kafka"
+    - "./logs/logstash-kafka2:/opt/kafka/logs/"
+  extra_hosts:
+    - "brokers:192.168.59.103"
+  links:
+    - "kafka1"
+  ports:
+    - "9093:9093"
