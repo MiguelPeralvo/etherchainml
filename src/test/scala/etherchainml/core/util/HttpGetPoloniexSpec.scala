@@ -1,6 +1,6 @@
 package etherchainml.core.util
 
-import etherchainml.core.CommonFixture
+import etherchainml.core.{Common, JSONWrapper, CommonFixture}
 import org.scalatest._
 import org.scalatest.concurrent.{ScalaFutures}
 import org.scalatest.time.{Seconds, Millis, Span}
@@ -37,6 +37,39 @@ class HttpGetPoloniexSpec extends FunSpec with Matchers with BeforeAndAfterAll w
 
       Then("it should retrieve 1944 trades")
         tradesJson.futureValue.size should equal(1944)
+    }
+
+    it("Gets a Json tx in the expected Json format") {
+
+      Given("there is an instance of HttpGetPoloniex for parseResponseJsonWrapper")
+      val httpGetPoloniexJson = HttpGetPoloniex(parseResponse = HttpGetPoloniex.parseResponseJsonWrapper)
+
+      When("requestBatch() is invoked with start = 1454140000, end = 1454140001")
+      val txs = httpGetPoloniexJson.requestBatch(start = 1454140000, end = 1454140010)
+
+      Then("it should retrieve the tx in the expected format")
+      //implicit val defaultPatience = PatienceConfig(timeout = Span(5, Seconds), interval = Span(200, Millis))
+
+      whenReady(txs) { txs =>
+        txs.size should equal(1)
+        val tx = txs(0)
+        tx match {
+          case expected: JSONWrapper =>
+          {
+            expected.payload match {
+              case value: String => value should not equal("")
+              case _ => throw new Exception("Unexpected type for payload")
+            }
+
+            expected.schema match {
+              case value: String => value should equal(Common.PoloniexTradeJsonSchema)
+              case _ => throw new Exception("Unexpected type for schema")
+            }
+          }
+
+          case _ => throw new Exception("Unexpected type for tx")
+        }
+      }
     }
   }
 }

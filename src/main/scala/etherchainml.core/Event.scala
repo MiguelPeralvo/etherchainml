@@ -10,13 +10,15 @@ sealed trait Event extends Serializable
 
 
 case class JSONWrapper(
-  body: JValue
+  schema: String,
+  hashcode: String,
+  payload: String
 ) extends Event
 
-object JSONWrapper
-{
-  def hashcode(str: String) = {str.hashCode().toString}
-}
+//object JSONWrapper
+//{
+//  def hashcode(str: String) = {str.hashCode().toString}
+//}
 
 /* More Information
  * val url = "https://poloniex.com/public?command=returnTradeHistory&currencyPair=BTC_ETH&start=1454140000&end=1454150049"

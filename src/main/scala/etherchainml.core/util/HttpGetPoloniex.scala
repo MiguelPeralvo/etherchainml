@@ -1,9 +1,10 @@
 package etherchainml.core.util
 
-import etherchainml.core.{JSONWrapper, Event, PoloniexTrade}
+import etherchainml.core._
 import org.json4s
 import org.json4s._
 import org.json4s.native.JsonMethods._
+import org.json4s.native.Serialization._
 import scala.concurrent.Future
 import scalaj.http.Http
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,7 +46,9 @@ object HttpGetPoloniex {
   def parseResponseJsonWrapper: (json4s.JValue) => List[JSONWrapper] = {
     jsonResponse =>
       val data: JValue = jsonResponse
-      val trades: List[JSONWrapper] = data.extract[List[JSONWrapper]]
+      val trades: List[JSONWrapper] = data.extract[List[PoloniexTrade]].map(trade => JSONWrapper(
+        Common.PoloniexTradeJsonSchema,
+        trade.globalTradeID.toString(), write(trade)))
       trades
   }
 }
