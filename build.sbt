@@ -31,6 +31,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-mllib" % "2.0.0",
   "org.apache.spark" %% "spark-catalyst" % "2.0.0",
   "org.apache.spark" %% "spark-streaming" % "2.0.0",
+  "org.apache.spark" %% "spark-streaming-kafka-0-8" % "2.0.0",
   "com.typesafe.akka" %% "akka-actor" % "2.3.15",
   "com.typesafe.akka" %% "akka-remote" % "2.3.15",
   "com.typesafe.akka" %% "akka-cluster" % "2.3.15",
