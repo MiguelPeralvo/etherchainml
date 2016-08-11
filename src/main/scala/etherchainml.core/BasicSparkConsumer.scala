@@ -5,6 +5,9 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{StreamingContext, Minutes, Seconds}
 import org.apache.spark.streaming.kafka._
 import kafka.serializer.StringDecoder
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.sql.{SparkSession, Row, SQLContext}
 
 
 object BasicSparkConsumer extends App{
@@ -13,7 +16,8 @@ object BasicSparkConsumer extends App{
   Logger.getLogger("akka").setLevel(Level.ERROR)
 
   val sparkConf = new SparkConf(false).setMaster("local[4]").setAppName("BasicSparkConsumer")
-  val ssc = new StreamingContext(sparkConf, Seconds(10))
+  val sparkSession = SparkSession.builder.config(sparkConf).getOrCreate()
+  val ssc = new StreamingContext(sparkSession.sparkContext, Seconds(10))
   ssc.checkpoint("checkpoint")
 
   val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc,
@@ -21,9 +25,17 @@ object BasicSparkConsumer extends App{
     QueueConfig.topicsSet)
 
   val lines = messages.map(_._2)
-  val words = lines.flatMap(_.split(" "))
-  val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
-  wordCounts.print()
+//  val words = lines.flatMap(_.split(" "))
+//  val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
+//  wordCounts.print()
+
+
+  lines.foreachRDD { rdd =>
+    if (rdd.toLocalIterator.nonEmpty) {
+      val rddJson = sparkSession.read.json(rdd)
+      println(rddJson)
+    }
+  }
 
   ssc.start()
   ssc.awaitTermination()
