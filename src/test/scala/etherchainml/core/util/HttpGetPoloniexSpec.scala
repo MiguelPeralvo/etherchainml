@@ -54,14 +54,14 @@ class HttpGetPoloniexSpec extends FunSpec with Matchers with BeforeAndAfterAll w
           txs.size should equal(1)
           val tx = txs(0)
           tx match {
-            case expected: JSONWrapper =>
+            case trade: JSONWrapper =>
             {
-              expected.payload match {
+              trade.payload match {
                 case value: String => value should not equal("")
                 case _ => throw new Exception("Unexpected type for payload")
               }
 
-              expected.schema match {
+              trade.schema match {
                 case value: String => value should equal(Common.PoloniexTradeJsonSchema)
                 case _ => throw new Exception("Unexpected type for schema")
               }
