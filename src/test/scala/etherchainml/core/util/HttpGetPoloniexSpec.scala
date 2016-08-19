@@ -1,6 +1,8 @@
 package etherchainml.core.util
 
 import etherchainml.core.{Common, JSONWrapper, CommonFixture}
+import org.json4s.JsonAST.JValue
+import org.json4s._
 import org.scalatest._
 import org.scalatest.concurrent.{ScalaFutures}
 import org.scalatest.time.{Seconds, Millis, Span}
@@ -57,7 +59,7 @@ class HttpGetPoloniexSpec extends FunSpec with Matchers with BeforeAndAfterAll w
             case trade: JSONWrapper =>
             {
               trade.payload match {
-                case value: String => value should not equal("")
+                case value: JValue => value should not equal(JNothing)
                 case _ => throw new Exception("Unexpected type for payload")
               }
 

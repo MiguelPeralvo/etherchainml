@@ -12,7 +12,7 @@ sealed trait Event extends Serializable
 case class JSONWrapper(
   schema: String,
   hashcode: String,
-  payload: String
+  payload: JValue
 ) extends Event
 
 //object JSONWrapper

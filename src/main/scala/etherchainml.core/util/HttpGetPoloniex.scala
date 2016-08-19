@@ -48,7 +48,9 @@ object HttpGetPoloniex {
       val data: JValue = jsonResponse
       val trades: List[JSONWrapper] = data.extract[List[PoloniexTrade]].map(trade => JSONWrapper(
         Common.PoloniexTradeJsonSchema,
-        trade.globalTradeID.toString(), write(trade)))
+        trade.globalTradeID.toString(), Extraction.decompose(trade)
+        //write(trade)
+      ))
       trades
   }
 }
