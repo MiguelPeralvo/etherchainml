@@ -46,7 +46,7 @@ object BasicCollector extends App{
   //TODO: In future iterations, we can move from JSON to AVRO to improve efficiency.
   implicit val formats = DefaultFormats
   val httpGetEtherChain = HttpGetEtherChain(parseResponse = HttpGetEtherChain.parseResponseJsonWrapper)
-  val etherChainTxs = httpGetEtherChain.requestBatch(start = 0, end = 10)
+  val etherChainTxs = httpGetEtherChain.requestBatch(start = 0, end = 10000)
 
   etherChainTxs.onComplete {
     case Success(value) => writeTxsToKafka(value)
@@ -54,7 +54,7 @@ object BasicCollector extends App{
   }
 
   val httpGetPoloniexJson = HttpGetPoloniex(parseResponse = HttpGetPoloniex.parseResponseJsonWrapper)
-  val poloniexTxs = httpGetPoloniexJson.requestBatch(start = 1440000000, end = 1440001000)
+  val poloniexTxs = httpGetPoloniexJson.requestBatch(start = 1440000000, end = 1440100000)
 
   poloniexTxs.onComplete {
     case Success(value) => writeTxsToKafka(value)
