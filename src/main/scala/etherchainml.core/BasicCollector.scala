@@ -24,10 +24,11 @@ object BasicCollector extends App{
     case txs: List[JSONWrapper] => {
       val jsonProducer = new KafkaProducer[String, String](QueueConfig.jsonProducerProps)
       //new KafkaProducer[String, String](QueueConfig.jsonProducerProps)
+      println(s"Writing ${txs.size} transactions.")
 
       txs.foreach { tx =>
-        println(write(tx))
-        println(s"JSONWrapper, before sending to kafka")
+//        println(write(tx))
+//        println(s"JSONWrapper, before sending to kafka")
 
         val key = tx.hashCode().toString
         val value = write(tx)
@@ -54,14 +55,14 @@ object BasicCollector extends App{
   }
 
   val httpGetPoloniexJson = HttpGetPoloniex(parseResponse = HttpGetPoloniex.parseResponseJsonWrapper)
-  val poloniexTxs = httpGetPoloniexJson.requestBatch(start = 1440000000, end = 1440100000)
+  val poloniexTxs = httpGetPoloniexJson.requestBatch(start = 1440000000, end = 1440200000)
 
   poloniexTxs.onComplete {
     case Success(value) => writeTxsToKafka(value)
     case Failure(e) => e.printStackTrace
   }
 
-  Common.sleep(5000)
+  Common.sleep(20000)
 
   //Now we write to Kafka
 

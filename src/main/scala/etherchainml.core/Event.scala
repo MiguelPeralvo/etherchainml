@@ -35,8 +35,8 @@ case class JSONWrapper(
   * @param total
   */
 case class PoloniexTrade(
-  globalTradeID: BigDecimal,
-  tradeID: BigDecimal,
+  globalTradeID: BigInt,
+  tradeID: BigInt,
   date: String,
   `type`:String,
   rate: String,
@@ -72,14 +72,16 @@ case class EtherChainTrade(
   sender: String,
   recipient:String,
   accountNonce: Option[String],
-  price: Double,
-  gasLimit: Double,
-  amount: Double,
-  block_id: Int,
+  price: Long,
+  gasLimit: Long,
+  amount: String,
+  block_id: Long,
   time: String,
   newContract: Option[Int],
   isContractTx: Option[Int],
-  blockHash:String,
+  blockHash: String,
   parentHash: String,
-  txIndex:Option[Int]) extends Event
+  txIndex:Option[Int],
+  gasUsed: Long,
+  `type`: String) extends Event
 
