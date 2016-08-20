@@ -19,7 +19,8 @@ object QueueConfig {
 
   val zkConnect = s"$kafkaHost:2181"
   val groupId = "group"
-  val topicJSON = "topicTxs10000_18237"
+  val topicJSON = "topicTxs_10000_39419_5" +
+    ""
   val kafkaServerURL = s"$kafkaHost"
   val kafkaProducerBufferSize = 64 * 1024
   val connectionTimeOut = 100000

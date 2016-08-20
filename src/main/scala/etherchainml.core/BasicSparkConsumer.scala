@@ -4,6 +4,7 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.spark
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.types.StructType
+import org.json4s.native.Serialization.{ read, write, writePretty }
 
 //import org.apache.spark.sql.types.StructType
 import org.apache.spark.streaming.{StreamingContext, Minutes, Seconds}
@@ -18,19 +19,6 @@ import org.json4s.jackson.JsonMethods._
 
 
 object BasicSparkConsumer extends App{
-  import org.apache.spark.sql.functions._
-
-  def flattenSchema(schema: StructType, prefix: String = null) : Array[Column] = {
-    schema.fields.flatMap(f => {
-      val colName = if (prefix == null) f.name else (prefix + "." + f.name)
-
-      f.dataType match {
-        case st: StructType => flattenSchema(st, colName)
-        case _ => Array(col(colName))
-      }
-    })
-  }
-
 
   // set logging to error
   Logger.getLogger("org").setLevel(Level.ERROR)
@@ -40,7 +28,7 @@ object BasicSparkConsumer extends App{
   val sparkConf = new SparkConf(false).setMaster("local[4]").setAppName("BasicSparkConsumer")
   val sparkSession = SparkSession.builder.config(sparkConf).getOrCreate()
   val ssc = new StreamingContext(sparkSession.sparkContext, Seconds(10))
-  ssc.checkpoint("checkpoint400")
+  ssc.checkpoint("checkpoint600")
 
   val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc,
     QueueConfig.kafkaParams,
@@ -48,26 +36,36 @@ object BasicSparkConsumer extends App{
 
   messages.map(_._2).foreachRDD {
     rdd =>
-    if (rdd.toLocalIterator.nonEmpty) {
+    if (!rdd.isEmpty()) {
        // Brings in default date formats etc.
       import sparkSession.implicits._
 
-
-      val dfJson = sparkSession.read.json(rdd)
-
-      dfJson.printSchema()
-
-      dfJson.groupBy("schema").count().show()
-      dfJson.select("schema").distinct.show()
-
-      val flattenedDf = dfJson.select(flattenSchema(dfJson.schema):_*)
-      flattenedDf.write.partitionBy("schema").mode(SaveMode.Overwrite).format("json").
-        save("txs-json")
-      //dfJson.write.partitionBy("schema").text("txs-csv")
+      //We flatten the JSON nested structure.
+      val rddJsonWrappers = rdd.map(
+         jsonWrapper => parse(jsonWrapper).extract[JSONWrapper]).repartition(1)
+        //.map(json =>
+//        (json.hashcode, json.schema, parse(json.payload).extract[Map[String, Any]])
+//      ).map((hashcode: String, schema: String, payload:Map[String, Any]) => payload)
+      .persist()
 
 
-      //TODO: Partition by YYYY/MM/DD/HH/MM?
-      //TODO: Other outputs: csv, avro, parquet, orc.
+      print(rddJsonWrappers.count())
+
+      // Filter Poloniex items '%PoloniexTrade%'
+      // TODO: Embed the schema in the fields and do a partitionBy?
+      //println(rddJsonWrappers.filter(trade => trade.schema.contains("PoloniexTrade")).count())
+
+      rddJsonWrappers.filter(trade => trade.schema.contains("PoloniexTrade")).map(
+        json => write(json.payload)).saveAsTextFile("output/poloniextrade_json")
+
+      // Filter Etherchain items '%EtherChainTrade%'
+      //println(rddJsonWrappers.filter(trade => trade.schema.contains("EtherChainTrade")).count())
+
+      rddJsonWrappers.filter(trade => trade.schema.contains("EtherChainTrade")).map(
+        json => write(json.payload)).saveAsTextFile("output/etherchaintrade_json")
+
+
+      rddJsonWrappers.unpersist()
     }
   }
 
