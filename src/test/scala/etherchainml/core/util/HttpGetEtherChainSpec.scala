@@ -1,6 +1,8 @@
 package etherchainml.core.util
 
 import etherchainml.core.{Common, JSONWrapper, CommonFixture}
+import org.json4s.JValue
+import org.json4s.JsonAST.JValue
 import org.json4s._
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
@@ -57,7 +59,7 @@ class HttpGetEtherChainSpec extends FunSpec with Matchers with BeforeAndAfterAll
             case expected: JSONWrapper =>
             {
               expected.payload match {
-                case value: String => value should not equal("")
+                case value: JValue => value should not equal(JNothing)
                 case _ => throw new Exception("Unexpected type for payload")
               }
 

@@ -51,7 +51,9 @@ object HttpGetEtherChain {
       val data: JValue = jsonResponse \ "data"
       val txs: List[JSONWrapper] = data.extract[List[EtherChainTrade]].map(trade => JSONWrapper(
         Common.EtherChainTradeJsonSchema,
-        trade.hash, write(trade)))
+        trade.hash, Extraction.decompose(trade)
+        //write(trade)
+      ))
       txs
   }
 }
